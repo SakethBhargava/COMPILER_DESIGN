@@ -1,0 +1,50 @@
+%option noyywrap
+%{
+#include<stdio.h>
+#include"y.tab.h"
+#include<math.h>
+%}
+%%
+[0-9] {yylval.dval=atof(yytext);return NUMBER;}
+[t];
+n return 0;
+. {return yytext[0];}
+%%
+void yyerror(char * str)
+{
+printf("n Invalid Expression...");
+}
+int main()
+{
+yyin=fopen("input6.txt","r");
+yyparse();
+return(0);
+}
+%{
+#include<stdio.h>
+int yylex(void);
+float output=0;
+%}
+%union
+{
+float dval;
+}
+%token <dval> NUMBER
+%left '+' '-'
+%left '*' '/'
+%nonassoc UMINUS
+%type <dval> state
+%type <dval> exp
+%type <dval> N
+%%
+state : exp N {}
+;
+exp : NUMBER {$$=$1;output=$$;}
+| exp exp '+' {$$=$1+$2;output=$$;}
+| exp exp '-' {$$=$1-$2;output=$$;}
+| exp exp '*' {$$=$1*$2;output=$$;}
+| exp exp '/' {$$=$1/$2;output=$$;}
+;
+N : {printf("Output =%f",output);}
+;
+%% 
